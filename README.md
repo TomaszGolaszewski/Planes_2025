@@ -3,3 +3,6 @@
 
 ## Instruction
 - To play 'Planes', open the file _index.html_ in your browser.
+- Controls:
+..- arrows up and down - speed;
+..- arrows left and right - altitude.
