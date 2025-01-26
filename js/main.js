@@ -1,14 +1,47 @@
 "use strict";
 
-const worldWidth = 2500; // int
+const worldWidth = 3000; // int
 const screenWidth = 1000; // int
 const screenHeight = 800; // int
 const deltaVelocity = 2; // int: aircraft speed difference between modes
 const deltaAngle = 2; // int: aircraft angle speed
 
-let screenOffset = 0;
+let screenOffset = 2300;
 let userPlane;
 let enemyPlane;
+let world = [
+    new TerrainChunk(0), 
+    new Desert(1), 
+    new Palm(2), 
+    new Desert(3), 
+    new FlagRed(4),
+    new Desert(5),
+    new Desert(6),
+    new Palm(7),
+    new Desert(8),
+    new Desert(9),
+    new Desert(10),
+    new Ocean(11),
+    new Ocean(12),
+    new Ocean(13),
+    new Ocean(14),
+    new Ocean(15),
+    new Ocean(16),
+    new Desert(17),
+    new Desert(18),
+    new Airport(19),
+    new FlagBlue(20),
+    new Airport(21),
+    new Airport(22),
+    new Airport(23),
+    new Palm(24),
+    new Desert(25),
+    new Ocean(26),
+    new Ocean(27),
+    new Ocean(28),
+    new Ocean(29),
+    new Ocean(30),
+]
 
 class Plane {
     constructor(worldX, worldY, angle, team) {
@@ -35,6 +68,13 @@ class Plane {
     move() {
         this.worldCoord.x += this.speed * Math.cos(this.angle);
         this.worldCoord.y += this.speed * Math.sin(this.angle);
+        // fold the world around
+        if (this.worldCoord.x > worldWidth) {
+            this.worldCoord.x -= worldWidth
+        };
+        if (this.worldCoord.x < 0) {
+            this.worldCoord.x += worldWidth
+        };
     };
 };
 
@@ -47,7 +87,7 @@ function setup() {
     noSmooth();
     // noCursor();
 
-    userPlane = new Plane(screenWidth/2 + 200, screenHeight/2, Math.PI, 1)
+    userPlane = new Plane(screenOffset, screenHeight - 30, Math.PI, 1)
     enemyPlane = new Plane(screenWidth/2 - 200, screenHeight/2, 0, 2)
 };
   
@@ -60,7 +100,10 @@ function draw() {
 
     userPlane.draw(screenOffset);
     enemyPlane.draw(screenOffset);
-    drawLandmarks(screenOffset);
+    for (let chunk of world) {
+        chunk.draw(screenOffset);
+    };
+    // drawLandmarks(screenOffset);
 
     // check and handle buttons' states
     if (keyIsDown(LEFT_ARROW) === true) {
