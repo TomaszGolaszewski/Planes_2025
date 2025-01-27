@@ -1,3 +1,7 @@
+v0.4 - 2025.01.27
+------
+* Small fixes.
+
 v0.3 - 2025.01.26
 ------
 * Added basic terrainChunk objects.

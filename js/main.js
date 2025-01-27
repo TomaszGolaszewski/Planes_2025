@@ -56,14 +56,15 @@ class Plane {
         else fill('red');
         stroke('black');
         strokeWeight(5);
+        let xCoord = decidePositionOnScreen(this.worldCoord.x - offset);
         line(
-            this.worldCoord.x - offset, 
+            xCoord, 
             this.worldCoord.y, 
-            this.worldCoord.x + r * Math.cos(this.angle) - offset, 
+            xCoord + r * Math.cos(this.angle), 
             this.worldCoord.y + r * Math.sin(this.angle)
         );
         noStroke();
-        circle(this.worldCoord.x - offset, this.worldCoord.y, 20);
+        circle(xCoord, this.worldCoord.y, 20);
     };
     move() {
         this.worldCoord.x += this.speed * Math.cos(this.angle);
@@ -141,3 +142,9 @@ function drawLandmarks(offset) {
     };
 };
 
+function decidePositionOnScreen(pos) {
+// decide if the passed position is on the screen - if not - move it
+    if (pos > screenWidth + screenMargin) pos -= worldWidth;
+    if (pos < -screenMargin) pos += worldWidth; // checks position after correction
+    return pos;
+};

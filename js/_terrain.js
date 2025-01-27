@@ -12,9 +12,7 @@ class TerrainChunk {
     draw(offset) {
         fill(this.color);
         noStroke();
-        let xCoord = this.id*chunkSize - offset;
-        if (xCoord > screenWidth + screenMargin) xCoord -= worldWidth;
-        if (xCoord < -screenMargin) xCoord += worldWidth;
+        let xCoord = decidePositionOnScreen(this.id*chunkSize - offset);
         rect(xCoord, screenHeight - this.height, chunkSize+1, this.height); // +1 to make an overlap
         // fill('red');
         // circle(xCoord, screenHeight, 20);
@@ -32,9 +30,7 @@ class Desert extends TerrainChunk {
 class Palm extends Desert {
     draw(offset) {
         super.draw(offset);
-        let xCoord = this.id*chunkSize - offset;
-        if (xCoord > screenWidth + screenMargin) xCoord -= worldWidth;
-        if (xCoord < -screenMargin) xCoord += worldWidth;
+        let xCoord = decidePositionOnScreen(this.id*chunkSize - offset);
         // palm tree trunk
         stroke('brown');
         strokeWeight(8);
@@ -59,9 +55,7 @@ class FlagBlue extends Airport {
     colorFlag = "blue";
     draw(offset) {
         super.draw(offset);
-        let xCoord = this.id*chunkSize - offset;
-        if (xCoord > screenWidth + screenMargin) xCoord -= worldWidth;
-        if (xCoord < -screenMargin) xCoord += worldWidth;
+        let xCoord = decidePositionOnScreen(this.id*chunkSize - offset);
         // flag
         fill(this.colorFlag);
         rect(xCoord, screenHeight-200, 45, 20);
