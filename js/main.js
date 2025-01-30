@@ -3,6 +3,10 @@
 const worldWidth = 3000; // int
 const screenWidth = 1000; // int
 const screenHeight = 800; // int
+const groundLevel = screenHeight - 25;
+const textPos = 830; // int
+const maxPower = 120; // int
+const deltaPower = 5; // int: increment of aircraft power increase
 const deltaVelocity = 2; // int: aircraft speed difference between modes
 const deltaAngle = 2; // int: aircraft angle speed
 
@@ -44,10 +48,16 @@ let world = [
 ]
 
 class Plane {
+    mass = 100;
+    dragCoefficient = 0.5;
+    liftCoefficient = 0.5;
     constructor(worldX, worldY, angle, team) {
         this.worldCoord = {x: worldX, y: worldY};
+        this.resultantForceVector = {x: 0, y: 0};
+        this.speedVector = {x: 0, y: 0};
+        this.speed = 0; // deltaVelocity;
         this.angle = angle; //radians
-        this.speed = deltaVelocity;
+        this.power = 0;
         this.team = team;
     };
     draw(offset) {
@@ -67,29 +77,69 @@ class Plane {
         circle(xCoord, this.worldCoord.y, 20);
     };
     move() {
-        this.worldCoord.x += this.speed * Math.cos(this.angle);
-        this.worldCoord.y += this.speed * Math.sin(this.angle);
+        this.dynamics();
+        this.kinematics();
+    };
+    dynamics() {
+        let vectorPower = {x: this.power * Math.cos(this.angle), y: this.power * Math.sin(this.angle)};
+        let vectorDrag = {
+            x: - this.speedVector.x * Math.abs(this.speedVector.x * this.dragCoefficient), 
+            y: - this.speedVector.y * Math.abs(this.speedVector.y * this.dragCoefficient), 
+        };
+        let vectorLift = {
+            x: - this.speedVector.y * Math.abs(this.speedVector.y * this.liftCoefficient), 
+            y: this.speedVector.x * Math.abs(this.speedVector.x * this.liftCoefficient),
+        };
+        let vectorGravitation = {x: 0, y: this.mass};
+
+        this.resultantForceVector.x = vectorPower.x + vectorDrag.x + vectorLift.x + vectorGravitation.x;
+        this.resultantForceVector.y = vectorPower.y + vectorDrag.y + vectorLift.y + vectorGravitation.y;
+
+        let screenOrigin = {x: screenWidth/2, y: this.worldCoord.y};
+        drawVector(vectorPower, screenOrigin);
+        drawVector(vectorDrag, screenOrigin);
+        drawVector(vectorLift, screenOrigin);
+        drawVector(vectorGravitation, screenOrigin);
+        drawVector(this.resultantForceVector, screenOrigin, 'green');
+        drawVector(this.speedVector, screenOrigin, 'white', 5);
+    };
+    kinematics() {
+        this.speedVector.x += this.resultantForceVector.x / this.mass;
+        this.speedVector.y += this.resultantForceVector.y / this.mass;
+        // this.worldCoord.x += this.speed * Math.cos(this.angle);
+        // this.worldCoord.y += this.speed * Math.sin(this.angle);
+        this.worldCoord.x += this.speedVector.x;
+        this.worldCoord.y += this.speedVector.y;
         // fold the world around
         if (this.worldCoord.x > worldWidth) {
-            this.worldCoord.x -= worldWidth
+            this.worldCoord.x -= worldWidth;
         };
         if (this.worldCoord.x < 0) {
-            this.worldCoord.x += worldWidth
+            this.worldCoord.x += worldWidth;
         };
+        // check the ground level
+        if (this.worldCoord.y >= groundLevel) {
+            this.worldCoord.y = groundLevel;
+            this.speedVector.y = 0;
+        };
+        if (this.worldCoord.y < 0) {
+            this.worldCoord.y = 0;
+            this.speedVector.y = 0;
+        };
+        this.speed = Math.sqrt(this.speedVector.x * this.speedVector.x + this.speedVector.y * this.speedVector.y);
     };
 };
 
 function setup() {
 // run once at the beginning
-    console.log("p5.js setup");
     
     let cnv = createCanvas(screenWidth, screenHeight);
     // cnv.position(100, 50);
     noSmooth();
     // noCursor();
 
-    userPlane = new Plane(screenOffset, screenHeight - 30, Math.PI, 1)
-    enemyPlane = new Plane(screenWidth/2 - 200, screenHeight/2, 0, 2)
+    userPlane = new Plane(screenOffset, 50, Math.PI, 1); // groundLevel
+    enemyPlane = new Plane(screenWidth/2 - 200, screenHeight/2, 0, 2);
 };
   
 function draw() {
@@ -99,24 +149,36 @@ function draw() {
     // draw screen
     background(135, 206, 235);
 
-    userPlane.draw(screenOffset);
-    enemyPlane.draw(screenOffset);
     for (let chunk of world) {
         chunk.draw(screenOffset);
     };
+    userPlane.draw(screenOffset);
+    enemyPlane.draw(screenOffset);
     // drawLandmarks(screenOffset);
 
+    // draw texts
+    fill('black');
+    textSize(20);
+    // textAlign(LEFT, CENTER);
+    text(`Power: ${userPlane.power}`, textPos, 25);
+    text(`Speed: ${userPlane.speed.toFixed(2)}`, textPos, 50);
+    text(`Altitude: ${groundLevel - userPlane.worldCoord.y.toFixed(0)}`, textPos, 75);
+
     // check and handle buttons' states
-    if (keyIsDown(LEFT_ARROW) === true) {
-        userPlane.angle -= deltaAngle*Math.PI/180;
-    }
-    if (keyIsDown(RIGHT_ARROW) === true) {
-        userPlane.angle += deltaAngle*Math.PI/180;
-    }
+    if (keyIsDown(UP_ARROW) === true) {
+        userPlane.angle -= deltaAngle*Math.PI/180 * 0.5;
+    } else if (keyIsDown(LEFT_ARROW) === true) {
+        userPlane.angle -= deltaAngle*Math.PI/180 * 2;
+    };
+    if (keyIsDown(DOWN_ARROW) === true) {
+        userPlane.angle += deltaAngle*Math.PI/180 * 0.5;
+    } else if (keyIsDown(RIGHT_ARROW) === true) {
+        userPlane.angle += deltaAngle*Math.PI/180 * 2;
+    };
 
     // move objects
     userPlane.move();
-    enemyPlane.move();
+    // enemyPlane.move();
     screenOffset = userPlane.worldCoord.x - screenWidth/2;
 
     enemyPlane.angle -= Math.PI/180;
@@ -126,10 +188,16 @@ function draw() {
 
 function keyPressed() {
 // run once when button is pressed
-    if (keyCode === UP_ARROW) {
-        userPlane.speed += deltaVelocity;
-    } else if (keyCode === DOWN_ARROW) {
-        userPlane.speed -= deltaVelocity;
+    if (key === '2') {
+        userPlane.power = maxPower;
+    } else if (key === 'w') {
+        // userPlane.speed += deltaVelocity;
+        userPlane.power += deltaPower;
+    } else if (key === 's') {
+        // userPlane.speed -= deltaVelocity;
+        userPlane.power -= deltaPower;
+    } else if (key === 'x') {
+        userPlane.power = 0;
     };
 };
 
@@ -140,6 +208,13 @@ function drawLandmarks(offset) {
     for (let i = 0; i < worldWidth; i+=500) {
         circle(i - offset, screenHeight, 20);
     };
+};
+
+function drawVector(vector, origin, color='red', scale=1) {
+// help tool to draw vector
+    stroke(color);
+    strokeWeight(2);
+    line(origin.x, origin.y, origin.x +  scale*vector.x, origin.y + scale*vector.y);
 };
 
 function decidePositionOnScreen(pos) {

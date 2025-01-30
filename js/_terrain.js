@@ -48,7 +48,7 @@ class Palm extends Desert {
 
 class Airport extends TerrainChunk {
     color = 100;
-    height = 20;
+    // height = 20;
 };
 
 class FlagBlue extends Airport {

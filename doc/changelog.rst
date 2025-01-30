@@ -1,3 +1,8 @@
+v0.5 - 2025.01.28
+------
+* Added ground collision checking;
+* Added basic physics to the plane model.
+
 v0.4 - 2025.01.27
 ------
 * Small fixes.
