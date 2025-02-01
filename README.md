@@ -4,5 +4,10 @@
 ## Instruction
 - To play 'Planes', open the file _index.html_ in your browser.
 - Controls:
-    - arrows up and down - speed;
-    - arrows left and right - altitude.
+    - arrows up and down - altitude (small changes);
+    - arrows left and right - altitude (big changes);
+    - 2 - full throttle;
+    - W - throttle up;
+    - S - throttle down;
+    - X - turn off throttle;
+    - V - show vectors.

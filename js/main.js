@@ -5,10 +5,6 @@ const screenWidth = 1000; // int
 const screenHeight = 800; // int
 const groundLevel = screenHeight - 25;
 const textPos = 830; // int
-const maxPower = 120; // int
-const deltaPower = 5; // int: increment of aircraft power increase
-const deltaVelocity = 2; // int: aircraft speed difference between modes
-const deltaAngle = 2; // int: aircraft angle speed
 
 let screenOffset = 2300;
 let userPlane;
@@ -47,89 +43,6 @@ let world = [
     new Ocean(30),
 ]
 
-class Plane {
-    mass = 100;
-    dragCoefficient = 0.5;
-    liftCoefficient = 0.5;
-    constructor(worldX, worldY, angle, team) {
-        this.worldCoord = {x: worldX, y: worldY};
-        this.resultantForceVector = {x: 0, y: 0};
-        this.speedVector = {x: 0, y: 0};
-        this.speed = 0; // deltaVelocity;
-        this.angle = angle; //radians
-        this.power = 0;
-        this.team = team;
-    };
-    draw(offset) {
-        let r = 20;
-        if (this.team === 1) fill('blue');
-        else fill('red');
-        stroke('black');
-        strokeWeight(5);
-        let xCoord = decidePositionOnScreen(this.worldCoord.x - offset);
-        line(
-            xCoord, 
-            this.worldCoord.y, 
-            xCoord + r * Math.cos(this.angle), 
-            this.worldCoord.y + r * Math.sin(this.angle)
-        );
-        noStroke();
-        circle(xCoord, this.worldCoord.y, 20);
-    };
-    move() {
-        this.dynamics();
-        this.kinematics();
-    };
-    dynamics() {
-        let vectorPower = {x: this.power * Math.cos(this.angle), y: this.power * Math.sin(this.angle)};
-        let vectorDrag = {
-            x: - this.speedVector.x * Math.abs(this.speedVector.x * this.dragCoefficient), 
-            y: - this.speedVector.y * Math.abs(this.speedVector.y * this.dragCoefficient), 
-        };
-        let vectorLift = {
-            x: - this.speedVector.y * Math.abs(this.speedVector.y * this.liftCoefficient), 
-            y: this.speedVector.x * Math.abs(this.speedVector.x * this.liftCoefficient),
-        };
-        let vectorGravitation = {x: 0, y: this.mass};
-
-        this.resultantForceVector.x = vectorPower.x + vectorDrag.x + vectorLift.x + vectorGravitation.x;
-        this.resultantForceVector.y = vectorPower.y + vectorDrag.y + vectorLift.y + vectorGravitation.y;
-
-        let screenOrigin = {x: screenWidth/2, y: this.worldCoord.y};
-        drawVector(vectorPower, screenOrigin);
-        drawVector(vectorDrag, screenOrigin);
-        drawVector(vectorLift, screenOrigin);
-        drawVector(vectorGravitation, screenOrigin);
-        drawVector(this.resultantForceVector, screenOrigin, 'green');
-        drawVector(this.speedVector, screenOrigin, 'white', 5);
-    };
-    kinematics() {
-        this.speedVector.x += this.resultantForceVector.x / this.mass;
-        this.speedVector.y += this.resultantForceVector.y / this.mass;
-        // this.worldCoord.x += this.speed * Math.cos(this.angle);
-        // this.worldCoord.y += this.speed * Math.sin(this.angle);
-        this.worldCoord.x += this.speedVector.x;
-        this.worldCoord.y += this.speedVector.y;
-        // fold the world around
-        if (this.worldCoord.x > worldWidth) {
-            this.worldCoord.x -= worldWidth;
-        };
-        if (this.worldCoord.x < 0) {
-            this.worldCoord.x += worldWidth;
-        };
-        // check the ground level
-        if (this.worldCoord.y >= groundLevel) {
-            this.worldCoord.y = groundLevel;
-            this.speedVector.y = 0;
-        };
-        if (this.worldCoord.y < 0) {
-            this.worldCoord.y = 0;
-            this.speedVector.y = 0;
-        };
-        this.speed = Math.sqrt(this.speedVector.x * this.speedVector.x + this.speedVector.y * this.speedVector.y);
-    };
-};
-
 function setup() {
 // run once at the beginning
     
@@ -138,8 +51,8 @@ function setup() {
     noSmooth();
     // noCursor();
 
-    userPlane = new Plane(screenOffset, 50, Math.PI, 1); // groundLevel
-    enemyPlane = new Plane(screenWidth/2 - 200, screenHeight/2, 0, 2);
+    userPlane = new Plane(screenOffset, groundLevel, Math.PI, 1);
+    // enemyPlane = new Plane(screenWidth/2 - 200, screenHeight/2, 0, 2);
 };
   
 function draw() {
@@ -153,13 +66,14 @@ function draw() {
         chunk.draw(screenOffset);
     };
     userPlane.draw(screenOffset);
-    enemyPlane.draw(screenOffset);
+    // enemyPlane.draw(screenOffset);
     // drawLandmarks(screenOffset);
 
     // draw texts
     fill('black');
+    noStroke();
     textSize(20);
-    // textAlign(LEFT, CENTER);
+    textAlign(LEFT, CENTER);
     text(`Power: ${userPlane.power}`, textPos, 25);
     text(`Speed: ${userPlane.speed.toFixed(2)}`, textPos, 50);
     text(`Altitude: ${groundLevel - userPlane.worldCoord.y.toFixed(0)}`, textPos, 75);
@@ -181,13 +95,14 @@ function draw() {
     // enemyPlane.move();
     screenOffset = userPlane.worldCoord.x - screenWidth/2;
 
-    enemyPlane.angle -= Math.PI/180;
+    // enemyPlane.angle -= Math.PI/180;
 
     console.timeEnd();
 };
 
 function keyPressed() {
 // run once when button is pressed
+    // aircraft power control
     if (key === '2') {
         userPlane.power = maxPower;
     } else if (key === 'w') {
@@ -198,6 +113,11 @@ function keyPressed() {
         userPlane.power -= deltaPower;
     } else if (key === 'x') {
         userPlane.power = 0;
+    };
+    // show vectors
+    if (key === 'v') {
+        if (userPlane.showVectors) userPlane.showVectors = false;
+        else userPlane.showVectors = true;
     };
 };
 

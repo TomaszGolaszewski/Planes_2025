@@ -1,3 +1,9 @@
+v0.6 - 2025.01.28
+------
+* Code refactoring;
+* Temporarily removed enemy plane;
+* Control changes.
+
 v0.5 - 2025.01.28
 ------
 * Added ground collision checking;
