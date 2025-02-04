@@ -8,8 +8,6 @@ const topMargin = 100; // int
 
 class Plane {
     mass = 100;
-    dragCoefficient = 0.5;
-    liftCoefficient = 0.5;
     constructor(worldX, worldY, angle, team) {
         this.worldCoord = {x: worldX, y: worldY};
         this.resultantForceVector = {x: 0, y: 0};
@@ -19,6 +17,7 @@ class Plane {
         this.power = 0;
         this.team = team;
         this.showVectors = false;
+        this.setFlapsTakeOff();
     };
     draw(offset) {
         let r = 20;
@@ -36,6 +35,18 @@ class Plane {
         );
         noStroke();
         circle(xCoord, yCoord, 20);
+
+        // flaps
+        if (this.flapsTakeOff) {
+            stroke('black');
+            strokeWeight(5);
+            line(
+                xCoord, 
+                yCoord, 
+                xCoord + r * Math.cos(this.angle + 1.25*Math.PI), 
+                yCoord + r * Math.sin(this.angle + 1.25*Math.PI)
+            );
+        };
 
         // frame when plane is under the screen
         noFill()
@@ -105,5 +116,15 @@ class Plane {
         //     this.speedVector.y = 0;
         // };
         this.speed = Math.sqrt(this.speedVector.x * this.speedVector.x + this.speedVector.y * this.speedVector.y);
+    };
+    setFlapsNominal() {
+        this.flapsTakeOff = false;
+        this.dragCoefficient = 0.5;
+        this.liftCoefficient = 0.5;
+    };
+    setFlapsTakeOff() {
+        this.flapsTakeOff = true;
+        this.dragCoefficient = 1.25;
+        this.liftCoefficient = 1.25;
     };
 };

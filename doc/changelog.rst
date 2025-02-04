@@ -1,3 +1,7 @@
+v0.7 - 2025.02.04
+------
+* Added flaps;
+
 v0.6 - 2025.01.28
 ------
 * Code refactoring;

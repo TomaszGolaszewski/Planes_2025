@@ -10,4 +10,5 @@
     - W - throttle up;
     - S - throttle down;
     - X - turn off throttle;
+    - F - flaps;
     - V - show vectors.

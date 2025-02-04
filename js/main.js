@@ -76,7 +76,12 @@ function draw() {
     textAlign(LEFT, CENTER);
     text(`Power: ${userPlane.power}`, textPos, 25);
     text(`Speed: ${userPlane.speed.toFixed(2)}`, textPos, 50);
-    text(`Altitude: ${groundLevel - userPlane.worldCoord.y.toFixed(0)}`, textPos, 75);
+    text(`Climbing: ${userPlane.speedVector.y.toFixed(1)}`, textPos, 75);
+    text(`Altitude: ${groundLevel - userPlane.worldCoord.y.toFixed(0)}`, textPos, 100);
+    // text flaps
+    if (userPlane.flapsTakeOff) {
+        text(`Flaps: Take Off`, 10, 25);
+    };
 
     // check and handle buttons' states
     if (keyIsDown(UP_ARROW) === true) {
@@ -113,6 +118,14 @@ function keyPressed() {
         userPlane.power -= deltaPower;
     } else if (key === 'x') {
         userPlane.power = 0;
+    };
+    // flaps
+    if (key === 'f') {
+        if (userPlane.flapsTakeOff) {
+            userPlane.setFlapsNominal()
+        } else {
+            userPlane.setFlapsTakeOff()
+        };
     };
     // show vectors
     if (key === 'v') {
