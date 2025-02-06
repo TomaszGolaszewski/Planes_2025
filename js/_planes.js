@@ -21,30 +21,45 @@ class Plane {
     };
     draw(offset) {
         let r = 20;
-        if (this.team === 1) fill('blue');
-        else fill('red');
-        stroke('black');
-        strokeWeight(5);
         let xCoord = decidePositionOnScreen(this.worldCoord.x - offset);
         let yCoord = this.worldCoord.y < topMargin ? topMargin : this.worldCoord.y;
+
+        // draw the image.
+        imageMode(CENTER);
+        translate(xCoord, yCoord);
+        rotate(this.angle-Math.PI);
+        image(imagePlane,0,0);
+        rotate(Math.PI-this.angle);
+        translate(-xCoord, -yCoord);
+
+        /*
+        // draw 2D primitives
+        // draw angle indicator
+        stroke('black');
+        strokeWeight(5);
         line(
             xCoord, 
             yCoord, 
             xCoord + r * Math.cos(this.angle), 
             yCoord + r * Math.sin(this.angle)
         );
+        // for future team indicator
+        // draw circle
+        if (this.team === 1) fill('blue');
+        else fill('red');
         noStroke();
         circle(xCoord, yCoord, 20);
+        */
 
         // flaps
         if (this.flapsTakeOff) {
-            stroke('black');
+            stroke(color(119, 119, 119)); // sonic silver
             strokeWeight(5);
             line(
-                xCoord, 
-                yCoord, 
-                xCoord + r * Math.cos(this.angle + 1.25*Math.PI), 
-                yCoord + r * Math.sin(this.angle + 1.25*Math.PI)
+                xCoord + 6 * Math.cos(this.angle + 1.25*Math.PI), 
+                yCoord + 6 * Math.sin(this.angle + 1.25*Math.PI), 
+                xCoord + 20 * Math.cos(this.angle + 1.25*Math.PI), 
+                yCoord + 20 * Math.sin(this.angle + 1.25*Math.PI)
             );
         };
 
@@ -110,11 +125,13 @@ class Plane {
             this.worldCoord.y = groundLevel;
             this.speedVector.y = 0;
         };
+        /*
         // top of the screen
-        // if (this.worldCoord.y < 0) {
-        //     this.worldCoord.y = 0;
-        //     this.speedVector.y = 0;
-        // };
+        if (this.worldCoord.y < 0) {
+            this.worldCoord.y = 0;
+            this.speedVector.y = 0;
+        };
+        */
         this.speed = Math.sqrt(this.speedVector.x * this.speedVector.x + this.speedVector.y * this.speedVector.y);
     };
     setFlapsNominal() {

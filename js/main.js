@@ -7,6 +7,7 @@ const groundLevel = screenHeight - 25;
 const textPos = 830; // int
 
 let screenOffset = 2300;
+let imagePlane;
 let userPlane;
 let enemyPlane;
 let world = [
@@ -43,6 +44,33 @@ let world = [
     new Ocean(30),
 ]
 
+function preload() {
+// run before the rest of the script
+    /*
+    Because of:
+    "Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource."
+    We can not have nice image in offline mode :(
+    You can run locally on Python server:
+    python3 -m http.server
+    and change false to true inside if below:
+    */
+    if (false) {
+        // load the image
+        imagePlane = loadImage('/assets/plane_transparent.png');
+    } else {
+        // create the p5.Graphics object
+        imagePlane = createGraphics(150, 35);
+        // draw to the graphics buffer
+        imagePlane.noStroke();
+        imagePlane.fill(color(169, 169, 169)); // dark gray
+        imagePlane.ellipse(140, 17, 20, 35); // tail
+        imagePlane.rect(60, 18, 80, 17); // tail
+        imagePlane.ellipse(60, 23, 120, 24); // body
+        imagePlane.fill(color(119, 119, 119)); // sonic silver
+        imagePlane.ellipse(68, 22, 60, 10); // wings
+    };
+};
+
 function setup() {
 // run once at the beginning
     
@@ -76,7 +104,7 @@ function draw() {
     textAlign(LEFT, CENTER);
     text(`Power: ${userPlane.power}`, textPos, 25);
     text(`Speed: ${userPlane.speed.toFixed(2)}`, textPos, 50);
-    text(`Climbing: ${userPlane.speedVector.y.toFixed(1)}`, textPos, 75);
+    text(`Climbing: ${-userPlane.speedVector.y.toFixed(1)}`, textPos, 75);
     text(`Altitude: ${groundLevel - userPlane.worldCoord.y.toFixed(0)}`, textPos, 100);
     // text flaps
     if (userPlane.flapsTakeOff) {

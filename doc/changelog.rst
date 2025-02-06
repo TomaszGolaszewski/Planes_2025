@@ -1,6 +1,10 @@
+v0.8 - 2025.02.06
+------
+* Added airplane graphics.
+
 v0.7 - 2025.02.04
 ------
-* Added flaps;
+* Added flaps.
 
 v0.6 - 2025.01.28
 ------
