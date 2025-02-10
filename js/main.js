@@ -1,9 +1,15 @@
+/*
+Planes 2025
+By Tomasz Golaszewski
+01.2025
+*/
+
 "use strict";
 
 const worldWidth = 3000; // int
 const screenWidth = 1000; // int
 const screenHeight = 800; // int
-const groundLevel = screenHeight - 25;
+const groundLevel = screenHeight - 35;
 const textPos = 830; // int
 
 let screenOffset = 2300;
@@ -77,10 +83,8 @@ function setup() {
     let cnv = createCanvas(screenWidth, screenHeight);
     // cnv.position(100, 50);
     noSmooth();
-    // noCursor();
 
     userPlane = new Plane(screenOffset, groundLevel, Math.PI, 1);
-    // enemyPlane = new Plane(screenWidth/2 - 200, screenHeight/2, 0, 2);
 };
   
 function draw() {
@@ -88,14 +92,12 @@ function draw() {
     console.time();
 
     // draw screen
-    background(135, 206, 235);
+    background(userPlane.isAlive ? color(135, 206, 235) : 'red')
 
     for (let chunk of world) {
         chunk.draw(screenOffset);
     };
     userPlane.draw(screenOffset);
-    // enemyPlane.draw(screenOffset);
-    // drawLandmarks(screenOffset);
 
     // draw texts
     fill('black');
@@ -107,9 +109,16 @@ function draw() {
     text(`Climbing: ${-userPlane.speedVector.y.toFixed(1)}`, textPos, 75);
     text(`Altitude: ${groundLevel - userPlane.worldCoord.y.toFixed(0)}`, textPos, 100);
     // text flaps
-    if (userPlane.flapsTakeOff) {
-        text(`Flaps: Take Off`, 10, 25);
-    };
+    if (userPlane.flapsTakeOff) {text(`Flaps: Take Off`, 10, 25)};
+    // text(`Flaps: ${userPlane.flapsTakeOff ? 'Take Off' : 'Nominal'}`, 10, 25);
+    // text landing gear
+    if (userPlane.landingGear) {text(`Landing Gear: Extended`, 10, 50)};
+    // text(`Landing Gear: ${userPlane.landingGear ? 'Extended' : 'Retracted'}`, 10, 50);
+
+    // text you died
+    textAlign(CENTER, CENTER);
+    textSize(50);
+    if (!userPlane.isAlive) text('YOU DIED', screenWidth/2, screenHeight/2);
 
     // check and handle buttons' states
     if (keyIsDown(UP_ARROW) === true) {
@@ -125,10 +134,8 @@ function draw() {
 
     // move objects
     userPlane.move();
-    // enemyPlane.move();
+    // center screen on user plane
     screenOffset = userPlane.worldCoord.x - screenWidth/2;
-
-    // enemyPlane.angle -= Math.PI/180;
 
     console.timeEnd();
 };
@@ -154,6 +161,10 @@ function keyPressed() {
         } else {
             userPlane.setFlapsTakeOff()
         };
+    };
+    // landing gear
+    if (key === 'g') {
+        userPlane.landingGear = userPlane.landingGear ? false : true;
     };
     // show vectors
     if (key === 'v') {

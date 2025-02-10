@@ -9,6 +9,7 @@ const topMargin = 100; // int
 class Plane {
     mass = 100;
     constructor(worldX, worldY, angle, team) {
+        this.isAlive = true;
         this.worldCoord = {x: worldX, y: worldY};
         this.resultantForceVector = {x: 0, y: 0};
         this.speedVector = {x: 0, y: 0};
@@ -17,12 +18,28 @@ class Plane {
         this.power = 0;
         this.team = team;
         this.showVectors = false;
+        this.landingGear = true;
         this.setFlapsTakeOff();
     };
     draw(offset) {
         let r = 20;
         let xCoord = decidePositionOnScreen(this.worldCoord.x - offset);
         let yCoord = this.worldCoord.y < topMargin ? topMargin : this.worldCoord.y;
+
+        // draw landing gear
+        if (this.landingGear) {
+            fill(color(119, 119, 119)); // sonic silver
+            stroke('black');
+            strokeWeight(5);
+            // rear
+            circle(
+                xCoord + 26 * Math.cos(this.angle + 1.4*Math.PI), 
+                yCoord + 26 * Math.sin(this.angle + 1.4*Math.PI), 10);
+            // front
+            circle(
+                xCoord + 65 * Math.cos(this.angle - 0.12*Math.PI), 
+                yCoord + 65 * Math.sin(this.angle - 0.12*Math.PI), 10);
+        };
 
         // draw the image.
         imageMode(CENTER);
@@ -124,14 +141,13 @@ class Plane {
         if (this.worldCoord.y >= groundLevel) {
             this.worldCoord.y = groundLevel;
             this.speedVector.y = 0;
+            if (this.landingGear) {
+                this.angle = Math.PI;
+            } else {
+                // crash
+                this.isAlive = false;
+            };
         };
-        /*
-        // top of the screen
-        if (this.worldCoord.y < 0) {
-            this.worldCoord.y = 0;
-            this.speedVector.y = 0;
-        };
-        */
         this.speed = Math.sqrt(this.speedVector.x * this.speedVector.x + this.speedVector.y * this.speedVector.y);
     };
     setFlapsNominal() {

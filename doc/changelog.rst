@@ -1,3 +1,7 @@
+v0.9 - 2025.02.10
+------
+* Added landed gear and crash detection.
+
 v0.8 - 2025.02.06
 ------
 * Added airplane graphics.

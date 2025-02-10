@@ -11,4 +11,5 @@
     - S - throttle down;
     - X - turn off throttle;
     - F - flaps;
+    - G - landing gear;
     - V - show vectors.
