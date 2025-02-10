@@ -13,3 +13,9 @@
     - F - flaps;
     - G - landing gear;
     - V - show vectors.
+
+<p align="center">
+  <img src="screens/plane_1.png" alt="Sand">
+  <br />
+  <img src="screens/plane_2.png" alt="Sand">
+</p>
