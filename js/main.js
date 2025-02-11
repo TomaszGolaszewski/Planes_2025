@@ -1,18 +1,22 @@
 /*
 Planes 2025
 By Tomasz Golaszewski
-01.2025
+01.2025 - 02.2025
 */
 
 "use strict";
 
 const worldWidth = 3000; // int
-const screenWidth = 1000; // int
-const screenHeight = 800; // int
-const groundLevel = screenHeight - 35;
-const textPos = 830; // int
 
-let screenOffset = 2300;
+let screenWidth = 1000; // int
+let screenHeight = 800; // int
+let groundHeight = 100; // ground height measured from the bottom of the screen
+let groundLevel; // ground height measured from the top of the screen
+let groundPlaneOverlap = 15;
+let textPos;
+
+let screenOffsetHorizontal = 2300;
+let screenOffsetVerical = 0;
 let imagePlane;
 let userPlane;
 let enemyPlane;
@@ -80,11 +84,20 @@ function preload() {
 function setup() {
 // run once at the beginning
     
-    let cnv = createCanvas(screenWidth, screenHeight);
-    // cnv.position(100, 50);
+    // get the dimensions of the browser window
+    screenWidth = windowWidth;
+    screenHeight = windowHeight;
+    groundLevel = screenHeight - groundHeight;
+    textPos = screenWidth - 170;
+
+    // window setup
+    let cnv = createCanvas(screenWidth, screenHeight); // custom
+    // let cnv = createCanvas(displayWidth, displayHeight); // monitor dimensions
+    // let cnv = createCanvas(windowWidth, windowHeight); // window dimensions
+    cnv.position(0, 0);
     noSmooth();
 
-    userPlane = new Plane(screenOffset, groundLevel, Math.PI, 1);
+    userPlane = new Plane(screenOffsetHorizontal, groundLevel, Math.PI, 1);
 };
   
 function draw() {
@@ -92,12 +105,15 @@ function draw() {
     console.time();
 
     // draw screen
-    background(userPlane.isAlive ? color(135, 206, 235) : 'red')
+    let heightForColor = Math.floor(userPlane.worldCoord.y / 100)
+    let backgroundColor = color(135 + heightForColor, 206 + 2 * heightForColor, 235 + heightForColor)
+    console.log(backgroundColor.levels)
+    background(userPlane.isAlive ? backgroundColor : 'red')
 
     for (let chunk of world) {
-        chunk.draw(screenOffset);
+        chunk.draw(screenOffsetHorizontal, screenOffsetVerical);
     };
-    userPlane.draw(screenOffset);
+    userPlane.draw(screenOffsetHorizontal);
 
     // draw texts
     fill('black');
@@ -135,10 +151,20 @@ function draw() {
     // move objects
     userPlane.move();
     // center screen on user plane
-    screenOffset = userPlane.worldCoord.x - screenWidth/2;
+    screenOffsetHorizontal = userPlane.screenOffsetHorizontal;
+    screenOffsetVerical = userPlane.screenOffsetVerical;
 
     console.timeEnd();
 };
+
+// // If the mouse is pressed,
+// // toggle full-screen mode.
+// function mousePressed() {
+//     if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+//       let fs = fullscreen();
+//       fullscreen(!fs);
+//     }
+// }
 
 function keyPressed() {
 // run once when button is pressed

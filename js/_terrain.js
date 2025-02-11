@@ -2,20 +2,33 @@
 
 const chunkSize = 100; // int
 const screenMargin = 200; // int, margin displayed outside the screen
+const minCloudHeight = 300; // int
+const maxCloudHeight = 2000; // int
 
 class TerrainChunk {
     color = 'red';
-    height = 15;
+    height = groundHeight - groundPlaneOverlap;
     constructor(id) {
         this.id = id
+        this.cloudHeight = - minCloudHeight - Math.floor(Math.random() * maxCloudHeight); // screenHeight -- minCloudHeight
     };
-    draw(offset) {
+    draw(offsetHorizontal, offsetVerical) {
         fill(this.color);
         noStroke();
-        let xCoord = decidePositionOnScreen(this.id*chunkSize - offset);
-        rect(xCoord, screenHeight - this.height, chunkSize+1, this.height); // +1 to make an overlap
+        let xCoord = decidePositionOnScreen(this.id*chunkSize - offsetHorizontal);
+        let yCoord = groundLevel - offsetVerical;
+        rect(xCoord, yCoord - this.height, chunkSize+1, this.height); // +1 to make an overlap
         // fill('red');
         // circle(xCoord, screenHeight, 20);
+
+        // draw cloud
+        let bubbleRadius = 50;
+        fill('white');
+        circle(xCoord, yCoord + this.cloudHeight, bubbleRadius);
+        circle(xCoord + 40, yCoord + this.cloudHeight - 10, bubbleRadius);
+        circle(xCoord + 80, yCoord + this.cloudHeight, bubbleRadius);
+        circle(xCoord + 120, yCoord + this.cloudHeight - 20, bubbleRadius);
+        circle(xCoord + 160, yCoord + this.cloudHeight, bubbleRadius);
     };
 };
 
@@ -28,46 +41,46 @@ class Desert extends TerrainChunk {
 };
 
 class Palm extends Desert {
-    draw(offset) {
-        super.draw(offset);
-        let xCoord = decidePositionOnScreen(this.id*chunkSize - offset);
+    draw(offsetHorizontal, offsetVerical) {
+        super.draw(offsetHorizontal, offsetVerical);
+        let xCoord = decidePositionOnScreen(this.id*chunkSize - offsetHorizontal);
+        let yCoord = groundLevel - offsetVerical - this.height;
         // palm tree trunk
         stroke('brown');
         strokeWeight(8);
-        line(xCoord+50, screenHeight - this.height, xCoord+60, screenHeight-70);
+        line(xCoord + 50, yCoord, xCoord+60, yCoord - 70);
         // leaves
         stroke('green');
         strokeWeight(10);
-        line(xCoord+60, screenHeight-70, xCoord+20, screenHeight-60); // bottom left
-        line(xCoord+60, screenHeight-70, xCoord+30, screenHeight-80); // mid left
-        line(xCoord+60, screenHeight-70, xCoord+90, screenHeight-50); // bottom right
-        line(xCoord+60, screenHeight-70, xCoord+100, screenHeight-70); // mid right
-        line(xCoord+60, screenHeight-70, xCoord+85, screenHeight-90); // top
+        line(xCoord + 60, yCoord - 70, xCoord + 20, yCoord - 60); // bottom left
+        line(xCoord + 60, yCoord - 70, xCoord + 30, yCoord - 80); // mid left
+        line(xCoord + 60, yCoord - 70, xCoord + 90, yCoord - 50); // bottom right
+        line(xCoord + 60, yCoord - 70, xCoord + 100, yCoord - 70); // mid right
+        line(xCoord + 60, yCoord - 70, xCoord + 85, yCoord - 90); // top
     };
 };
 
 class Airport extends TerrainChunk {
     color = 100;
-    // height = 20;
 };
 
 class FlagBlue extends Airport {
     colorFlag = "blue";
-    draw(offset) {
-        super.draw(offset);
-        let xCoord = decidePositionOnScreen(this.id*chunkSize - offset);
+    draw(offsetHorizontal, offsetVerical) {
+        super.draw(offsetHorizontal, offsetVerical);
+        let xCoord = decidePositionOnScreen(this.id*chunkSize - offsetHorizontal);
+        let yCoord = groundLevel - offsetVerical - this.height ;
         // flag
         fill(this.colorFlag);
-        rect(xCoord, screenHeight-200, 45, 20);
+        rect(xCoord, yCoord - 200, 45, 20);
         // pole
         stroke('black');
         strokeWeight(6);
-        line(xCoord, screenHeight - this.height + 5, xCoord, screenHeight-200);
+        line(xCoord, yCoord + 5, xCoord, yCoord - 200);
     };
 };
 
 class FlagRed extends FlagBlue {
     color = "gold"
     colorFlag = "red";
-    height = 15;
 };

@@ -1,3 +1,8 @@
+v1.0 - 2025.02.11
+------
+* Changed game format to full screen;
+* Added sky animation.
+
 v0.9 - 2025.02.10
 ------
 * Added landed gear and crash detection.

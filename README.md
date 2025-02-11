@@ -14,6 +14,12 @@
     - G - landing gear;
     - V - show vectors.
 
+### Last changes:
+v1.0 - 2025.02.11
+* Changed game format to full screen;
+* Added sky animation.
+
+
 <p align="center">
   <img src="screens/plane_1.png" alt="Sand">
   <br />

@@ -4,7 +4,7 @@ const maxPower = 120; // int
 const deltaPower = 5; // int: increment of aircraft power increase
 const deltaVelocity = 2; // int: aircraft speed difference between modes
 const deltaAngle = 2; // int: aircraft angle speed
-const topMargin = 100; // int
+const topMargin = 200; // int
 
 class Plane {
     mass = 100;
@@ -21,6 +21,12 @@ class Plane {
         this.landingGear = true;
         this.setFlapsTakeOff();
     };
+    get screenOffsetHorizontal() {
+        return this.worldCoord.x - screenWidth/2;
+    }; 
+    get screenOffsetVerical() {
+        return this.worldCoord.y - screenHeight;
+    }; 
     draw(offset) {
         let r = 20;
         let xCoord = decidePositionOnScreen(this.worldCoord.x - offset);
@@ -80,19 +86,19 @@ class Plane {
             );
         };
 
-        // frame when plane is under the screen
-        noFill()
-        stroke('black');
-        strokeWeight(3);
-        if (this.worldCoord.y < topMargin) {
-            rect(screenWidth/2 - 200, 0, 400, 2*topMargin);
-            // draw text
-            fill('black');
-            noStroke();
-            textSize(20);
-            textAlign(RIGHT, TOP);
-            text(`+ ${(topMargin - this.worldCoord.y).toFixed(0)}`, screenWidth/2 + 200, 2*topMargin + 5);
-        };
+        // // frame when plane is under the screen
+        // noFill()
+        // stroke('black');
+        // strokeWeight(3);
+        // if (this.worldCoord.y < topMargin) {
+        //     rect(screenWidth/2 - 200, 0, 400, 2*topMargin);
+        //     // draw text
+        //     fill('black');
+        //     noStroke();
+        //     textSize(20);
+        //     textAlign(RIGHT, TOP);
+        //     text(`+ ${(topMargin - this.worldCoord.y).toFixed(0)}`, screenWidth/2 + 200, 2*topMargin + 5);
+        // };
     };
     move() {
         this.dynamics();
