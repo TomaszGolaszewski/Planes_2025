@@ -1,13 +1,15 @@
 "use strict";
 
 const maxPower = 120; // int
+const maxHeight = 10000; // int
 const deltaPower = 5; // int: increment of aircraft power increase
 const deltaVelocity = 2; // int: aircraft speed difference between modes
 const deltaAngle = 2; // int: aircraft angle speed
-const topMargin = 200; // int
+const topScreenMargin = 200; // int
 
 class Plane {
     mass = 100;
+
     constructor(worldX, worldY, angle, team) {
         this.isAlive = true;
         this.worldCoord = {x: worldX, y: worldY};
@@ -21,16 +23,40 @@ class Plane {
         this.landingGear = true;
         this.setFlapsTakeOff();
     };
+
     get screenOffsetHorizontal() {
         return this.worldCoord.x - screenWidth/2;
     }; 
     get screenOffsetVerical() {
         return this.worldCoord.y - screenHeight;
     }; 
+
+    get airDensity() {
+        let density = (maxHeight + this.worldCoord.y - groundLevel) / maxHeight; // worldCoord.y is negative
+        return density > 0 ? density : 0;
+    };
+    get dragCoefficient() {
+        return this.baseDragCoefficient; // * this.airDensity; compensation for engine power loss
+    }
+    get liftCoefficient() {
+        return this.baseLiftCoefficient * this.airDensity; 
+    }
+
+    setFlapsNominal() {
+        this.flapsTakeOff = false;
+        this.baseDragCoefficient = 0.5;
+        this.baseLiftCoefficient = 0.5;
+    };
+    setFlapsTakeOff() {
+        this.flapsTakeOff = true;
+        this.baseDragCoefficient = 1.25;
+        this.baseLiftCoefficient = 1.25;
+    };
+
     draw(offset) {
         let r = 20;
         let xCoord = decidePositionOnScreen(this.worldCoord.x - offset);
-        let yCoord = this.worldCoord.y < topMargin ? topMargin : this.worldCoord.y;
+        let yCoord = this.worldCoord.y < topScreenMargin ? topScreenMargin : this.worldCoord.y;
 
         // draw landing gear
         if (this.landingGear) {
@@ -55,25 +81,6 @@ class Plane {
         rotate(Math.PI-this.angle);
         translate(-xCoord, -yCoord);
 
-        /*
-        // draw 2D primitives
-        // draw angle indicator
-        stroke('black');
-        strokeWeight(5);
-        line(
-            xCoord, 
-            yCoord, 
-            xCoord + r * Math.cos(this.angle), 
-            yCoord + r * Math.sin(this.angle)
-        );
-        // for future team indicator
-        // draw circle
-        if (this.team === 1) fill('blue');
-        else fill('red');
-        noStroke();
-        circle(xCoord, yCoord, 20);
-        */
-
         // flaps
         if (this.flapsTakeOff) {
             stroke(color(119, 119, 119)); // sonic silver
@@ -85,20 +92,6 @@ class Plane {
                 yCoord + 20 * Math.sin(this.angle + 1.25*Math.PI)
             );
         };
-
-        // // frame when plane is under the screen
-        // noFill()
-        // stroke('black');
-        // strokeWeight(3);
-        // if (this.worldCoord.y < topMargin) {
-        //     rect(screenWidth/2 - 200, 0, 400, 2*topMargin);
-        //     // draw text
-        //     fill('black');
-        //     noStroke();
-        //     textSize(20);
-        //     textAlign(RIGHT, TOP);
-        //     text(`+ ${(topMargin - this.worldCoord.y).toFixed(0)}`, screenWidth/2 + 200, 2*topMargin + 5);
-        // };
     };
     move() {
         this.dynamics();
@@ -120,7 +113,7 @@ class Plane {
         this.resultantForceVector.y = vectorPower.y + vectorDrag.y + vectorLift.y + vectorGravitation.y;
 
         if (this.showVectors) {
-            let screenOrigin = {x: screenWidth/2, y: this.worldCoord.y < topMargin ? topMargin : this.worldCoord.y};
+            let screenOrigin = {x: screenWidth/2, y: this.worldCoord.y < topScreenMargin ? topScreenMargin : this.worldCoord.y};
             drawVector(vectorPower, screenOrigin);
             drawVector(vectorDrag, screenOrigin);
             drawVector(vectorLift, screenOrigin);
@@ -155,15 +148,5 @@ class Plane {
             };
         };
         this.speed = Math.sqrt(this.speedVector.x * this.speedVector.x + this.speedVector.y * this.speedVector.y);
-    };
-    setFlapsNominal() {
-        this.flapsTakeOff = false;
-        this.dragCoefficient = 0.5;
-        this.liftCoefficient = 0.5;
-    };
-    setFlapsTakeOff() {
-        this.flapsTakeOff = true;
-        this.dragCoefficient = 1.25;
-        this.liftCoefficient = 1.25;
     };
 };

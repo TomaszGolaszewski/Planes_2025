@@ -14,7 +14,10 @@
     - G - landing gear;
     - V - show vectors.
 
-### Last changes:
+## Last changes:
+v1.1 - 2025.02.13
+* Added air density and new clouds;
+
 v1.0 - 2025.02.11
 * Changed game format to full screen;
 * Added sky animation.

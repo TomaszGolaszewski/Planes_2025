@@ -6,7 +6,7 @@ By Tomasz Golaszewski
 
 "use strict";
 
-const worldWidth = 3000; // int
+const worldWidth = 6000; // int
 
 let screenWidth = 1000; // int
 let screenHeight = 800; // int
@@ -15,7 +15,7 @@ let groundLevel; // ground height measured from the top of the screen
 let groundPlaneOverlap = 15;
 let textPos;
 
-let screenOffsetHorizontal = 2300;
+let screenOffsetHorizontal = 4600;
 let screenOffsetVerical = 0;
 let imagePlane;
 let userPlane;
@@ -42,7 +42,7 @@ let world = [
     new Desert(18),
     new Airport(19),
     new FlagBlue(20),
-    new Airport(21),
+    new AirportCenterTile(21),
     new Airport(22),
     new Airport(23),
     new Palm(24),
@@ -88,7 +88,7 @@ function setup() {
     screenWidth = windowWidth;
     screenHeight = windowHeight;
     groundLevel = screenHeight - groundHeight;
-    textPos = screenWidth - 170;
+    textPos = screenWidth - 190;
 
     // window setup
     let cnv = createCanvas(screenWidth, screenHeight); // custom
@@ -124,6 +124,7 @@ function draw() {
     text(`Speed: ${userPlane.speed.toFixed(2)}`, textPos, 50);
     text(`Climbing: ${-userPlane.speedVector.y.toFixed(1)}`, textPos, 75);
     text(`Altitude: ${groundLevel - userPlane.worldCoord.y.toFixed(0)}`, textPos, 100);
+    text(`Air Density: ${(userPlane.airDensity * 100).toFixed(0)}%`, textPos, 125)
     // text flaps
     if (userPlane.flapsTakeOff) {text(`Flaps: Take Off`, 10, 25)};
     // text(`Flaps: ${userPlane.flapsTakeOff ? 'Take Off' : 'Nominal'}`, 10, 25);
